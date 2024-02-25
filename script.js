@@ -1,112 +1,168 @@
-// define our choices
+
 const choices = ['rock', 'paper', 'scissors'];
-
-// define a number of rounds and the first one
-const rounds = 5;
-let round = 1;
-
-//get info from player
-function getPlayerChoice() {
-    let playerChoice;
-    while (true) {
-    playerChoice = prompt("Round " + round + " of " + rounds + " . Rock paper scissors?").toLowerCase();
-    if (choices.includes(playerChoice)) {
-          break;
-    }
-    }
-     
-    return playerChoice;
-}
-
-//generate random for computer
 function getComputerChoice() {
     let computerChoice = choices[Math.floor(Math.random()*choices.length)];
     return computerChoice;
 }
 
-// play a round of RPS
+let round = 1;
+let computerWin = 0;
+let playerWin = 0;
 
-function playRound() {
-    let playerSelection = getPlayerChoice();
+
+
+function playRound(arg) {
+
+    let playerSelection = arg;
+
     let computerSelection = getComputerChoice();
 
 // get messages 
-let tieMessage = `Round ${round}: both picked ${playerSelection}, it's a tie`;
-let winMessage = `Round ${round}: ${playerSelection} beats ${computerSelection}, you win this round`;
-let loseMessage = `Round ${round}: ${computerSelection} beats ${playerSelection}, you lose this round`;
+    let tieMessage = `Round ${round}: both picked ${playerSelection}`;
+    let winMessage = `Round ${round}: ${playerSelection} beats ${computerSelection}`;
+    let loseMessage = `Round ${round}: ${computerSelection} beats ${playerSelection}`;
+    
+// some icon goodness 
 
-// simple compare
+    switch (playerSelection) {
+        case 'rock':
+            playerIco.textContent = '✊';
+            break;
+        
+        case 'paper':
+            playerIco.textContent = '✋';
+            break;
+        
+        case 'scissors':
+            playerIco.textContent = '✌';
+            break;
+        default:
+            break;
+    }
+
+    switch (computerSelection) {
+        case 'rock':
+            computerIco.textContent = '✊';
+            break;
+        
+        case 'paper':
+            computerIco.textContent = '✋';
+            break;
+        
+        case 'scissors':
+            computerIco.textContent = '✌';
+            break;
+        default:
+            break;
+    }
+
+
+
+  // simple compare  
     if (playerSelection === computerSelection) {
-        console.log(tieMessage);
+        result.textContent = tieMessage;
         return "tie";
     }
     else if (playerSelection === 'rock') {
-
-
         if (computerSelection === 'scissors') {
-            console.log(winMessage);
+            result.textContent = winMessage;
             return "win";
         }
         if (computerSelection === 'paper') {
-            console.log(loseMessage);
+            result.textContent = loseMessage;
             return "lose";
         }
     }
     else if (playerSelection === 'paper') {
         if (computerSelection === 'rock') {
-            console.log(winMessage);
+            result.textContent = winMessage;
             return "win";
         }
         if (computerSelection === 'scissors') {
-            console.log(loseMessage);
+            result.textContent = loseMessage;
             return "lose";
         }
     }
     else if (playerSelection === 'scissors') {
         if (computerSelection === 'paper') {
-            console.log(winMessage);
+            result.textContent = winMessage;
             return "win";
         }
         if (computerSelection === 'rock') {
-            console.log(loseMessage);
-            return "lose;"
+            result.textContent = loseMessage;
+            return "lose"; 
         }
     }
 }
 
-// play game with scores
-function playGame() {
-    let computerWin = 0;
-    let playerWin = 0;
+function playGame(arg) {
+    let result = playRound(arg);
+    if (result == "win") {
+        playerWin++;
+        playerScore.textContent = playerWin;
+        message.textContent = "You win this round!";
+    }
+    else if (result == "lose") {
+        computerWin++;
+        computerScore.textContent = computerWin;
+        message.textContent = "You lose this round!";
+    }
+    else message.textContent = "This round is tied!";
+    round++;
+    if (computerWin === 5) {
+        message.style.color = "red";
+        message.textContent = "YOU LOSE THE GAME";
+        gameOver();
+    }
+    if (playerWin === 5) {
+        message.style.color = "green";
+        message.textContent = "YOU WIN THE GAME";
+        gameOver();
+    } 
+}    
 
-// 5 rounds
-    for (let i = 0; i < rounds; i++) {
-        
-        let result = playRound();
-        if (result == "win") {
-            playerWin++;
-        }
-        else if (result == "lose") {
-            computerWin++;
-        }
-        round++;
-           }
-    console.log(`Score: ${playerWin} - ${computerWin}`);
-    if (computerWin < playerWin) {
-        console.log("You won the game!");
-    }
-    else if (computerWin > playerWin) {
-        console.log("You lost the game!");
-    }
-    else {
-        console.log("The game is tied!");
-    }
-    
+function gameOver() {
+    reset.appendChild(btnReset);
+    btnReset.textContent = "Reset";
+    btnRock.disabled = true;
+    btnPaper.disabled = true;
+    btnScissors.disabled = true;
 }
 
-console.log(playGame());
+function purgeResults() {
+    computerWin = 0;
+    playerWin = 0;
+    playerScore.textContent = playerWin;
+    computerScore.textContent = computerWin;
+    round = 1;
+    result.textContent = "First to score 5 points wins the game";
+    message.textContent = "Choose your weapon";
+    btnRock.disabled = false;
+    btnPaper.disabled = false;
+    btnScissors.disabled = false;
+    message.style.color = "";
+    computerIco.textContent = "X";
+    playerIco.textContent = "X";
+    reset.removeChild(btnReset);
+}
 
+// UI
 
+const btnRock = document.querySelector('#btnRock');
+const btnPaper = document.querySelector('#btnPaper');
+const btnScissors = document.querySelector('#btnScissors');
+const playerScore = document.querySelector('#playerScore');
+const computerScore = document.querySelector('#computerScore');
+const message = document.querySelector('#message');
+const result = document.querySelector('#result');
+const reset = document.querySelector('#reset');
+const btnReset = document.createElement('button');
+const playerIco = document.querySelector('#playerIco');
+const computerIco = document.querySelector('#computerIco');
 
+btnRock.addEventListener('click', () => {playGame('rock')});
+btnPaper.addEventListener('click', () => {playGame('paper')});
+btnScissors.addEventListener('click', () => {playGame('scissors')});
+btnReset.addEventListener('click', () => {purgeResults()});
 
 
